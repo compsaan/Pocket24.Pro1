@@ -7505,7 +7505,12 @@
                     const address = document.getElementById('withdrawAddressInput').value.trim();
                     if (!amount || parseFloat(amount) < 10) { showToast(t('minWithdrawError'), true); return; }
                     if (!address) { showToast(t('enterWalletAddress'), true); return; }
-                    try { addWalletTransaction({type:'withdraw',amount:parseFloat(amount),network:currentNetwork,currency:'USDT',symbol:'$',status:'pending',address:address}); } catch(e){}
+                    var _amt = parseFloat(amount);
+                    var _acc = getSavedAccount();
+                    var _bal = _acc ? (_acc.balance || 0) : 0;
+                    if (_amt > _bal) { showToast('الرصيد غير كافٍ في المحفظة', true); return; }
+                    try { addWalletTransaction({type:'withdraw',amount:_amt,network:currentNetwork,currency:'USDT',symbol:'$',status:'pending',address:address}); } catch(e){}
+                    try { if (_acc) { _acc.balance = +(( _bal - _amt ).toFixed(2)); saveAccount(_acc); updateBalanceDisplay(); } } catch(e){}
                     try { if (typeof renderWalletTabContent === 'function' && document.getElementById('walletTabContent')) renderWalletTabContent(); } catch(e){}
                     showToast(t('withdrawSuccess'), true);
                     closeModal(document.getElementById('withdrawModal'));
@@ -7951,9 +7956,14 @@
                                 showToast((t('enterWalletAddress')||'يرجى إدخال عنوان المحفظة') + ' — الحقل فارغ', true, 'error');
                                 return;
                             }
-                            var _wtx = addWalletTransaction({type:'withdraw',amount:parseFloat(amount),
+                            var _amt2 = parseFloat(amount);
+                            var _acc2 = getSavedAccount();
+                            var _bal2 = _acc2 ? (_acc2.balance || 0) : 0;
+                            if (_amt2 > _bal2) { showToast('الرصيد غير كافٍ في المحفظة', true, 'error'); return; }
+                            var _wtx = addWalletTransaction({type:'withdraw',amount:_amt2,
                                 network:currentWdNetwork,currency:'USDT',symbol:'$',
                                 status:'pending',address:address});
+                            try { if (_acc2) { _acc2.balance = +(( _bal2 - _amt2 ).toFixed(2)); saveAccount(_acc2); updateBalanceDisplay(); } } catch(e){}
                             scheduleWalletTxCompletion(_wtx.id, WITHDRAW_PENDING_MS);
                             showToast('تم استلام طلب السحب — قيد المعالجة (3 دقائق)', true, 'success');
                             try { renderWalletTabContent(); } catch(e){}
