@@ -6911,18 +6911,60 @@
 
             let balanceHidden = JSON.parse(localStorage.getItem(STORAGE_KEYS.BALANCE_HIDDEN) || 'false');
 
-            // ==================== NEW DEPOSIT ADDRESSES ====================
-            // Updated static deposit addresses as requested
-            const FIXED_DEPOSIT_ADDRESSES = {
-                trc20: 'TDdcVMgz1JJ3WmQkPpQmXd18VYXj6qAWuE',
-                bep20: '0x5430B1C2Dcb5f5EE5E45314a9588e5D0EAFf0a76',
-                erc20: '0x5430B1C2Dcb5f5EE5E45314a9588e5D0EAFf0a76'
-            };
+            // ==================== DEPOSIT ADDRESSES (unique per account) ====================
+            // Each account gets its own randomly generated deposit addresses.
+            function _randHex(len) {
+                const chars = '0123456789abcdef';
+                let s = '';
+                for (let i = 0; i < len; i++) s += chars.charAt(Math.floor(Math.random() * chars.length));
+                return s;
+            }
+            function _randBase58(len) {
+                const chars = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
+                let s = '';
+                for (let i = 0; i < len; i++) s += chars.charAt(Math.floor(Math.random() * chars.length));
+                return s;
+            }
+            function generateDepositAddresses() {
+                return {
+                    trc20: 'T' + _randBase58(33),
+                    bep20: '0x' + _randHex(40),
+                    erc20: '0x' + _randHex(40)
+                };
+            }
 
             function getSavedAccount() {
                 const acc = localStorage.getItem(STORAGE_KEYS.ACCOUNT);
                 if (!acc) return null;
-                try { return JSON.parse(acc); } catch (e) { return null; }
+                try {
+                    const parsed = JSON.parse(acc);
+                    // Auto-reset today's profit every 24h on any read
+                    if (parsed) {
+                        const prev = parsed.todayProfit;
+                        const prevReset = parsed.todayProfitResetAt;
+                        checkTodayProfitReset(parsed);
+                        if (parsed.todayProfit !== prev || parsed.todayProfitResetAt !== prevReset) {
+                            localStorage.setItem(STORAGE_KEYS.ACCOUNT, JSON.stringify(parsed));
+                        }
+                    }
+                    return parsed;
+                } catch (e) { return null; }
+            }
+
+            // Reset today's profit every 24 hours
+            function checkTodayProfitReset(account) {
+                if (!account) return account;
+                const now = Date.now();
+                const DAY_MS = 24 * 60 * 60 * 1000;
+                if (!account.todayProfitResetAt) {
+                    account.todayProfitResetAt = now;
+                } else if (now - account.todayProfitResetAt >= DAY_MS) {
+                    account.todayProfit = 0.00;
+                    // advance in full-day increments to keep aligned
+                    const cycles = Math.floor((now - account.todayProfitResetAt) / DAY_MS);
+                    account.todayProfitResetAt += cycles * DAY_MS;
+                }
+                return account;
             }
 
             function saveAccount(account) {
@@ -6931,17 +6973,23 @@
                 if (account && account.todayProfit === undefined) account.todayProfit = 0.00;
                 if (account && account.availableBalance === undefined) account.availableBalance = account.todayProfit || 0.00;
                 if (account && account.frozenBalance === undefined) account.frozenBalance = 0.00;
+                if (account && account.todayProfitResetAt === undefined) account.todayProfitResetAt = Date.now();
+                checkTodayProfitReset(account);
                 localStorage.setItem(STORAGE_KEYS.ACCOUNT, JSON.stringify(account));
             }
 
-            // Force migration of deposit addresses for existing accounts
+            // Ensure existing accounts have their own unique deposit addresses
             function migrateDepositAddresses() {
                 const acc = getSavedAccount();
                 if (!acc) return;
-                const newAddrs = { ...FIXED_DEPOSIT_ADDRESSES };
-                // Always overwrite with the new addresses to ensure all accounts get the update
-                acc.depositAddresses = newAddrs;
-                saveAccount(acc);
+                if (!acc.depositAddresses ||
+                    !acc.depositAddresses.trc20 ||
+                    !acc.depositAddresses.bep20 ||
+                    !acc.depositAddresses.erc20 ||
+                    acc.depositAddresses.trc20 === 'TDdcVMgz1JJ3WmQkPpQmXd18VYXj6qAWuE') {
+                    acc.depositAddresses = generateDepositAddresses();
+                    saveAccount(acc);
+                }
             }
 
             function isLoggedIn() { return localStorage.getItem(STORAGE_KEYS.SESSION) === 'true'; }
@@ -6963,9 +7011,13 @@
             }
 
             function ensureDepositAddresses(account) {
-                // Always use the latest addresses from FIXED_DEPOSIT_ADDRESSES
-                account.depositAddresses = { ...FIXED_DEPOSIT_ADDRESSES };
-                saveAccount(account);
+                if (!account.depositAddresses ||
+                    !account.depositAddresses.trc20 ||
+                    !account.depositAddresses.bep20 ||
+                    !account.depositAddresses.erc20) {
+                    account.depositAddresses = generateDepositAddresses();
+                    saveAccount(account);
+                }
                 return account.depositAddresses;
             }
 
@@ -8243,8 +8295,8 @@
                 };
                 acc.referralCode = generateReferralCode();
                 acc.referralLink = `https://compsaan.github.io/Pockett24.Pro/?ref=${acc.referralCode}`;
-                // Use the new addresses from FIXED_DEPOSIT_ADDRESSES
-                acc.depositAddresses = { ...FIXED_DEPOSIT_ADDRESSES };
+                // Generate unique deposit addresses for this account
+                acc.depositAddresses = generateDepositAddresses();
                 saveAccount(acc);
                 saveReferralStats({ total: 0, rewards: 0, l1: 0, l2: 0, l3: 0 });
                 showToast(t('accountCreated'), true);
