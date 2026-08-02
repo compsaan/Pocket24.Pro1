@@ -5145,6 +5145,112 @@
         .wtx-status.pending { background:rgba(245,158,11,0.12); color:#d97706; }
         .wtx-status.done    { background:rgba(22,163,74,0.10);  color:#16a34a; }
         .wtx-status.failed  { background:rgba(239,68,68,0.10);  color:#ef4444; }
+        .wtx-item {
+            position:relative;
+            overflow:hidden;
+            min-height:78px;
+            transition:transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+        }
+        .wtx-item::before {
+            content:'';
+            position:absolute;
+            inset-inline-start:0;
+            top:0;
+            bottom:0;
+            width:3px;
+            background:#2563eb;
+            opacity:.85;
+        }
+        .wtx-item:active { transform:scale(.985); }
+        .wtx-item:hover {
+            border-color:rgba(37,99,235,.28);
+            box-shadow:0 8px 24px rgba(15,23,42,.08);
+        }
+        .wtx-item .wtx-icon-wrap.dep { background:linear-gradient(135deg,rgba(16,185,129,.16),rgba(37,99,235,.08)); color:#059669; }
+        .wtx-item .wtx-icon-wrap.wd { background:linear-gradient(135deg,rgba(239,68,68,.16),rgba(245,158,11,.08)); color:#dc2626; }
+        .wtx-item .wtx-icon-wrap.tr { background:linear-gradient(135deg,rgba(139,92,246,.16),rgba(59,130,246,.08)); color:#7c3aed; }
+        .wtx-card-arrow {
+            width:27px;
+            height:27px;
+            flex:0 0 27px;
+            border-radius:9px;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            color:#94a3b8;
+            background:var(--input-bg,#f8fafc);
+            border:1px solid var(--border-color,#e2e8f0);
+            font-size:10px;
+            transition:.18s;
+        }
+        .wtx-item:hover .wtx-card-arrow { color:#2563eb; border-color:#93c5fd; }
+        .wtx-card-hint {
+            display:block;
+            margin-top:5px;
+            color:var(--text-muted);
+            font-size:10px;
+            font-weight:700;
+        }
+        .whist-summary {
+            display:grid;
+            grid-template-columns:repeat(3,1fr);
+            gap:8px;
+            margin:0 0 13px;
+        }
+        .whist-summary-card {
+            min-width:0;
+            padding:12px 8px;
+            text-align:center;
+            background:var(--card-bg);
+            border:1px solid var(--border-color);
+            border-radius:15px;
+            box-shadow:var(--card-shadow);
+        }
+        .whist-summary-card i {
+            display:block;
+            width:25px;
+            height:25px;
+            line-height:25px;
+            margin:0 auto 5px;
+            border-radius:8px;
+            font-size:11px;
+        }
+        .whist-summary-card.deposit i { color:#059669; background:rgba(16,185,129,.12); }
+        .whist-summary-card.withdraw i { color:#dc2626; background:rgba(239,68,68,.11); }
+        .whist-summary-card.count i { color:#2563eb; background:rgba(37,99,235,.11); }
+        .whist-summary-value {
+            display:block;
+            color:var(--text-primary);
+            font-size:13px;
+            font-weight:900;
+            direction:ltr;
+            white-space:nowrap;
+            overflow:hidden;
+            text-overflow:ellipsis;
+        }
+        .whist-summary-label {
+            display:block;
+            color:var(--text-muted);
+            font-size:10px;
+            margin-top:3px;
+            white-space:nowrap;
+        }
+        .whist-history-intro {
+            display:flex;
+            align-items:center;
+            justify-content:space-between;
+            gap:10px;
+            margin:4px 0 10px;
+        }
+        .whist-history-intro strong { color:var(--text-primary); font-size:14px; }
+        .whist-history-intro span { color:var(--text-muted); font-size:11px; }
+        @media (max-width:360px) {
+            .wtx-item { padding:11px 10px; gap:9px; }
+            .wtx-icon-wrap { width:41px; height:41px; }
+            .wtx-amount { font-size:13px; }
+            .whist-summary { gap:5px; }
+            .whist-summary-card { padding-inline:4px; }
+        }
         .wdep-confirm-btn {
             width:100%; margin-top:14px; padding:13px; border-radius:14px;
             border:none; cursor:pointer;
@@ -7867,7 +7973,11 @@
                     +'<span class="wtx-cbadge"><i class="fas fa-coins" style="font-size:9px;"></i>&nbsp;'+cur+'·'+net+'</span>'
                     +'<span>'+dt+'</span></div>'
                     +'<span class="wtx-status '+si.c+'">'+si.l+'</span>'
-                    +'</div></div></div>';
+                    +'</div>'
+                    +'<span class="wtx-card-hint"><i class="fas fa-hand-pointer" style="font-size:9px;margin-left:3px;"></i> اضغط لعرض التفاصيل الكاملة</span>'
+                    +'</div>'
+                    +'<span class="wtx-card-arrow" aria-hidden="true"><i class="fas fa-chevron-left"></i></span>'
+                    +'</div>';
             }
 
             function renderWalletTabContent() {
@@ -8179,6 +8289,16 @@
                         list.sort(function(a,b){ return _hSort==='asc' ? (a.ts-b.ts) : (b.ts-a.ts); });
                         var el=container.querySelector('.wtx-hist-list');
                         if(!el)return;
+                        var visibleDeposits=list.filter(function(tx){return tx.type==='deposit';})
+                            .reduce(function(sum,tx){return sum+parseFloat(tx.amount||0);},0);
+                        var visibleWithdrawals=list.filter(function(tx){return tx.type==='withdraw';})
+                            .reduce(function(sum,tx){return sum+parseFloat(tx.amount||0);},0);
+                        var summaryDeposit=container.querySelector('#whistTotalDeposits');
+                        var summaryWithdraw=container.querySelector('#whistTotalWithdrawals');
+                        var summaryCount=container.querySelector('#whistTotalCount');
+                        if(summaryDeposit) summaryDeposit.textContent='$'+visibleDeposits.toFixed(2);
+                        if(summaryWithdraw) summaryWithdraw.textContent='$'+visibleWithdrawals.toFixed(2);
+                        if(summaryCount) summaryCount.textContent=String(list.length);
                         if(!list.length){
                             el.innerHTML='<div class="wov-empty" style="margin-top:16px;">'
                                 +'<div class="wov-empty-icon"><i class="fas fa-file-invoice-dollar"></i></div>'
@@ -8192,6 +8312,12 @@
                             +(_hSort==='desc'?'الأحدث أولاً':'الأقدم أولاً');
                     }
                     container.innerHTML=
+                         '<div class="whist-history-intro"><strong><i class="fas fa-chart-simple" style="color:#2563eb;margin-left:5px;"></i> ملخص السجل</strong><span>اضغط على أي عملية للمزيد</span></div>'
+                        +'<div class="whist-summary">'
+                        +'<div class="whist-summary-card deposit"><i class="fas fa-arrow-down"></i><strong class="whist-summary-value" id="whistTotalDeposits">$0.00</strong><span class="whist-summary-label">إجمالي الإيداعات</span></div>'
+                        +'<div class="whist-summary-card withdraw"><i class="fas fa-arrow-up"></i><strong class="whist-summary-value" id="whistTotalWithdrawals">$0.00</strong><span class="whist-summary-label">إجمالي السحوبات</span></div>'
+                        +'<div class="whist-summary-card count"><i class="fas fa-receipt"></i><strong class="whist-summary-value" id="whistTotalCount">0</strong><span class="whist-summary-label">عدد العمليات</span></div>'
+                        +'</div>'
                          '<div class="whist-filter">'
                         +'  <button class="whist-filter-btn active" data-whist="all">الكل</button>'
                         +'  <button class="whist-filter-btn" data-whist="deposit">إيداع</button>'
