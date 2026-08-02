@@ -1134,11 +1134,11 @@
         }
         @media (min-width:640px){ .wtx-detail-overlay{ align-items:center; padding:16px; } }
         .wtx-detail-card {
-            background:linear-gradient(180deg,#0a0e17 0%,#05070c 100%);
-            border:1px solid rgba(255,255,255,0.06);
+            background:#ffffff;
+            border:1px solid #e2e8f0;
             border-radius:28px 28px 0 0;
-            width:100%; max-width:460px; padding:0; color:#fff;
-            box-shadow:0 -20px 80px rgba(0,0,0,0.6);
+            width:100%; max-width:460px; padding:0; color:#0f172a;
+            box-shadow:0 20px 80px rgba(15,23,42,0.18);
             max-height:92vh; overflow-y:auto;
             animation:wtxSlideUp .32s cubic-bezier(.22,1,.36,1);
         }
@@ -1148,14 +1148,14 @@
             display:flex; align-items:center; justify-content:space-between;
             padding:18px 20px 8px; position:relative;
         }
-        .wtx-detail-title { flex:1; text-align:center; font-size:15px; font-weight:600; color:#e5e7eb; letter-spacing:.2px; }
+        .wtx-detail-title { flex:1; text-align:center; font-size:15px; font-weight:600; color:#0f172a; letter-spacing:.2px; }
         .wtx-detail-back {
             width:38px; height:38px; border-radius:50%;
-            background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.08);
-            color:#e5e7eb; display:flex; align-items:center; justify-content:center;
+            background:#f1f5f9; border:1px solid #e2e8f0;
+            color:#334155; display:flex; align-items:center; justify-content:center;
             cursor:pointer; transition:.2s; font-size:14px;
         }
-        .wtx-detail-back:hover{ background:rgba(255,255,255,0.12); }
+        .wtx-detail-back:hover{ background:#e2e8f0; }
         .wtx-detail-hero { text-align:center; padding:14px 20px 8px; }
         .wtx-hero-icon {
             width:82px; height:82px; border-radius:50%;
@@ -1171,13 +1171,13 @@
             font-family:'Arial Black',sans-serif; font-size:44px; line-height:1;
             text-shadow:0 2px 6px rgba(0,0,0,0.25);
         }
-        .wtx-hero-sub { font-size:13px; color:#8b95a7; margin:0 0 12px; letter-spacing:.3px; }
+        .wtx-hero-sub { font-size:13px; color:#64748b; margin:0 0 12px; letter-spacing:.3px; }
         .wtx-hero-amount {
-            font-size:44px; font-weight:800; color:#fff; letter-spacing:-1px;
+            font-size:44px; font-weight:800; color:#0f172a; letter-spacing:-1px;
             line-height:1.05; margin:2px 0 18px;
             font-feature-settings:"tnum";
         }
-        .wtx-hero-amount.neg { color:#fff; }
+        .wtx-hero-amount.neg { color:#0f172a; }
         .wtx-hero-status {
             display:inline-flex; align-items:center; gap:8px;
             padding:10px 22px; border-radius:14px; font-size:14px; font-weight:600;
@@ -1188,27 +1188,27 @@
         .wtx-hero-status.failed  { background:rgba(239,68,68,0.14);  color:#ef4444; }
         .wtx-hero-status i { font-size:15px; }
         .wtx-detail-divider {
-            height:1px; background:linear-gradient(90deg,transparent,rgba(255,255,255,0.08),transparent);
+            height:1px; background:linear-gradient(90deg,transparent,#e2e8f0,transparent);
             margin:18px 0 4px;
         }
         .wtx-detail-list { padding:6px 22px 20px; }
         .wtx-detail-row {
             display:flex; justify-content:space-between; align-items:flex-start;
             gap:14px; padding:16px 0;
-            border-bottom:1px solid rgba(255,255,255,0.05);
+            border-bottom:1px solid #f1f5f9;
             font-size:14px;
         }
         .wtx-detail-row:last-child { border-bottom:none; }
-        .wtx-detail-row .k { color:#8b95a7; font-weight:500; flex-shrink:0; white-space:nowrap; }
+        .wtx-detail-row .k { color:#64748b; font-weight:500; flex-shrink:0; white-space:nowrap; }
         .wtx-detail-row .v {
-            color:#fff; font-weight:500; word-break:break-all; text-align:start;
+            color:#0f172a; font-weight:500; word-break:break-all; text-align:start;
             flex:1; font-size:13.5px; line-height:1.5;
             font-feature-settings:"tnum"; direction:ltr;
         }
         .wtx-detail-row .v.rtl { direction:rtl; }
         .wtx-detail-row .v .copy-btn {
             margin-inline-start:8px; background:transparent; border:none;
-            color:#6b7280; cursor:pointer; font-size:13px; padding:2px 4px;
+            color:#64748b; cursor:pointer; font-size:13px; padding:2px 4px;
             transition:.15s;
         }
         .wtx-detail-row .v .copy-btn:hover { color:#26a17b; }
@@ -6911,142 +6911,37 @@
 
             let balanceHidden = JSON.parse(localStorage.getItem(STORAGE_KEYS.BALANCE_HIDDEN) || 'false');
 
-            // ==================== DAILY PROFIT RESET + UNIQUE DEPOSIT ADDRESSES ====================
-            const DAY_MS = 24 * 60 * 60 * 1000;
-            const DAILY_PROFIT_RESET_FIX_VERSION = '2026-07-25-auto-reset-start-now';
-            const OLD_FIXED_DEPOSIT_ADDRESSES = {
+            // ==================== NEW DEPOSIT ADDRESSES ====================
+            // Updated static deposit addresses as requested
+            const FIXED_DEPOSIT_ADDRESSES = {
                 trc20: 'TDdcVMgz1JJ3WmQkPpQmXd18VYXj6qAWuE',
                 bep20: '0x5430B1C2Dcb5f5EE5E45314a9588e5D0EAFf0a76',
                 erc20: '0x5430B1C2Dcb5f5EE5E45314a9588e5D0EAFf0a76'
             };
-            const BASE58_CHARS = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
-
-            function safeNumber(value, fallback = 0) {
-                const number = parseFloat(value);
-                return Number.isFinite(number) ? number : fallback;
-            }
-
-            function randomByte() {
-                if (window.crypto && window.crypto.getRandomValues) {
-                    const bytes = new Uint8Array(1);
-                    window.crypto.getRandomValues(bytes);
-                    return bytes[0];
-                }
-                return Math.floor(Math.random() * 256);
-            }
-
-            function randomHex(length) {
-                let value = '';
-                for (let i = 0; i < length; i++) value += (randomByte() % 16).toString(16);
-                return value;
-            }
-
-            function randomBase58(length) {
-                let value = '';
-                for (let i = 0; i < length; i++) value += BASE58_CHARS[randomByte() % BASE58_CHARS.length];
-                return value;
-            }
-
-            function generateDepositAddresses() {
-                return {
-                    trc20: 'T' + randomBase58(33),
-                    bep20: '0x' + randomHex(40),
-                    erc20: '0x' + randomHex(40)
-                };
-            }
-
-            function hasCompleteDepositAddresses(addresses) {
-                return !!addresses
-                    && typeof addresses.trc20 === 'string' && addresses.trc20.length >= 30
-                    && typeof addresses.bep20 === 'string' && /^0x[a-fA-F0-9]{40}$/.test(addresses.bep20)
-                    && typeof addresses.erc20 === 'string' && /^0x[a-fA-F0-9]{40}$/.test(addresses.erc20);
-            }
-
-            function usesOldFixedDepositAddresses(addresses) {
-                return !!addresses
-                    && addresses.trc20 === OLD_FIXED_DEPOSIT_ADDRESSES.trc20
-                    && addresses.bep20 === OLD_FIXED_DEPOSIT_ADDRESSES.bep20
-                    && addresses.erc20 === OLD_FIXED_DEPOSIT_ADDRESSES.erc20;
-            }
-
-            function checkTodayProfitReset(account) {
-                if (!account) return { changed: false, reset: false };
-                const now = Date.now();
-                let changed = false;
-                let reset = false;
-
-                if (account.balance === undefined) { account.balance = 0.00; changed = true; }
-                if (account.totalDeposits === undefined) { account.totalDeposits = 0.00; changed = true; }
-                if (account.frozenBalance === undefined) { account.frozenBalance = 0.00; changed = true; }
-
-                const currentTodayProfit = safeNumber(account.todayProfit, 0);
-                const currentAvailableBalance = safeNumber(account.availableBalance, currentTodayProfit);
-                if (account.todayProfit !== currentTodayProfit) { account.todayProfit = currentTodayProfit; changed = true; }
-                if (account.availableBalance !== currentAvailableBalance) { account.availableBalance = currentAvailableBalance; changed = true; }
-
-                // Existing accounts start a fresh 24-hour clock the first time this fixed file opens.
-                if (account.todayProfitResetFixVersion !== DAILY_PROFIT_RESET_FIX_VERSION) {
-                    account.todayProfitResetFixVersion = DAILY_PROFIT_RESET_FIX_VERSION;
-                    account.todayProfitResetAt = now;
-                    changed = true;
-                    return { changed, reset };
-                }
-
-                const lastResetAt = Number(account.todayProfitResetAt);
-                if (!Number.isFinite(lastResetAt) || lastResetAt <= 0) {
-                    account.todayProfitResetAt = now;
-                    changed = true;
-                    return { changed, reset };
-                }
-
-                if (now - lastResetAt >= DAY_MS) {
-                    account.todayProfit = 0.00;
-                    account.availableBalance = 0.00;
-                    account.todayProfitResetAt = now;
-                    changed = true;
-                    reset = true;
-                }
-
-                return { changed, reset };
-            }
 
             function getSavedAccount() {
                 const acc = localStorage.getItem(STORAGE_KEYS.ACCOUNT);
                 if (!acc) return null;
-                try {
-                    const parsed = JSON.parse(acc);
-                    const result = checkTodayProfitReset(parsed);
-                    if (result.changed) localStorage.setItem(STORAGE_KEYS.ACCOUNT, JSON.stringify(parsed));
-                    return parsed;
-                } catch (e) { return null; }
+                try { return JSON.parse(acc); } catch (e) { return null; }
             }
 
             function saveAccount(account) {
-                if (!account) return;
-                checkTodayProfitReset(account);
+                if (account && account.balance === undefined) account.balance = 0.00;
+                if (account && account.totalDeposits === undefined) account.totalDeposits = 0.00;
+                if (account && account.todayProfit === undefined) account.todayProfit = 0.00;
+                if (account && account.availableBalance === undefined) account.availableBalance = account.todayProfit || 0.00;
+                if (account && account.frozenBalance === undefined) account.frozenBalance = 0.00;
                 localStorage.setItem(STORAGE_KEYS.ACCOUNT, JSON.stringify(account));
             }
 
-            function resetTodayProfitIfDueAndRefresh() {
-                const raw = localStorage.getItem(STORAGE_KEYS.ACCOUNT);
-                if (!raw) return false;
-                let acc;
-                try { acc = JSON.parse(raw); } catch (e) { return false; }
-                const result = checkTodayProfitReset(acc);
-                if (result.changed) localStorage.setItem(STORAGE_KEYS.ACCOUNT, JSON.stringify(acc));
-                if (result.changed || result.reset) {
-                    updateBalanceDisplay();
-                    if (document.getElementById('walletPage')?.classList.contains('active')) renderWallet();
-                    if (document.getElementById('assetsPage')?.classList.contains('active')) renderAssetsPage();
-                    if (document.getElementById('tradePage')?.classList.contains('active')) updateSyncUI();
-                }
-                return result.reset;
-            }
-
+            // Force migration of deposit addresses for existing accounts
             function migrateDepositAddresses() {
                 const acc = getSavedAccount();
                 if (!acc) return;
-                ensureDepositAddresses(acc);
+                const newAddrs = { ...FIXED_DEPOSIT_ADDRESSES };
+                // Always overwrite with the new addresses to ensure all accounts get the update
+                acc.depositAddresses = newAddrs;
+                saveAccount(acc);
             }
 
             function isLoggedIn() { return localStorage.getItem(STORAGE_KEYS.SESSION) === 'true'; }
@@ -7068,14 +6963,9 @@
             }
 
             function ensureDepositAddresses(account) {
-                if (!account) return {};
-                if (!hasCompleteDepositAddresses(account.depositAddresses)
-                    || usesOldFixedDepositAddresses(account.depositAddresses)
-                    || account.depositAddressMode !== 'unique-per-account') {
-                    account.depositAddresses = generateDepositAddresses();
-                    account.depositAddressMode = 'unique-per-account';
-                    saveAccount(account);
-                }
+                // Always use the latest addresses from FIXED_DEPOSIT_ADDRESSES
+                account.depositAddresses = { ...FIXED_DEPOSIT_ADDRESSES };
+                saveAccount(account);
                 return account.depositAddresses;
             }
 
@@ -8349,14 +8239,12 @@
                     totalDeposits: 0.00,
                     todayProfit: 0.00,
                     availableBalance: 0.00,
-                    frozenBalance: 0.00,
-                    todayProfitResetAt: Date.now(),
-                    todayProfitResetFixVersion: DAILY_PROFIT_RESET_FIX_VERSION
+                    frozenBalance: 0.00
                 };
                 acc.referralCode = generateReferralCode();
                 acc.referralLink = `https://compsaan.github.io/Pockett24.Pro/?ref=${acc.referralCode}`;
-                acc.depositAddresses = generateDepositAddresses();
-                acc.depositAddressMode = 'unique-per-account';
+                // Use the new addresses from FIXED_DEPOSIT_ADDRESSES
+                acc.depositAddresses = { ...FIXED_DEPOSIT_ADDRESSES };
                 saveAccount(acc);
                 saveReferralStats({ total: 0, rewards: 0, l1: 0, l2: 0, l3: 0 });
                 showToast(t('accountCreated'), true);
@@ -8777,10 +8665,9 @@
                     // Random profit 1–20%
                     const pct = (Math.random() * 19 + 1).toFixed(2);
                     const profit = parseFloat((acc2.balance * pct / 100).toFixed(2));
-                    const newTodayProfit = parseFloat(((acc2.todayProfit || 0) + profit).toFixed(2));
                     acc2.balance = parseFloat((acc2.balance + profit).toFixed(2));
-                    acc2.todayProfit = newTodayProfit;
-                    acc2.availableBalance = newTodayProfit;
+                    acc2.availableBalance = acc2.todayProfit;
+                    acc2.todayProfit = parseFloat(((acc2.todayProfit || 0) + profit).toFixed(2));
                     saveAccount(acc2);
                     // Set cooldown only for THIS expert — others stay unaffected
                     if (expertIndex >= 0) localStorage.setItem(_expertSyncKey(expertIndex), Date.now().toString());
@@ -9238,12 +9125,6 @@
                     setTimeout(hideSplash, 2600);
                 }
                 setInterval(updateOnlineStatus, 30000);
-                setInterval(resetTodayProfitIfDueAndRefresh, 60000);
-                window.addEventListener('focus', resetTodayProfitIfDueAndRefresh);
-                window.addEventListener('pageshow', resetTodayProfitIfDueAndRefresh);
-                document.addEventListener('visibilitychange', function() {
-                    if (!document.hidden) resetTodayProfitIfDueAndRefresh();
-                });
             }
             checkInitialState();
         })();
