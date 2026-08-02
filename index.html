@@ -7634,12 +7634,7 @@
                 // ── History button → navigate to wallet page → history tab ──
                 const historyBtn = document.getElementById('assetsHistoryBtn');
                 if (historyBtn) {
-                    historyBtn.onclick = () => {
-                        document.querySelectorAll('.wallet-tab').forEach(t => t.classList.remove('active'));
-                        const histTab = document.querySelector('.wallet-tab[data-wallet-tab="history"]');
-                        if (histTab) histTab.classList.add('active');
-                        openWalletPage();
-                    };
+                    historyBtn.onclick = () => openWalletPage('history');
                 }
 
                 // ── Sub-tab switching ──
@@ -7718,10 +7713,19 @@
                 });
             }
 
-            function openWalletPage() {
+            function openWalletPage(requestedTab) {
                 if (!isLoggedIn()) { openModal(document.getElementById('loginModal')); return; }
+                const targetTab = requestedTab || 'overview';
+                document.querySelectorAll('.wallet-tab').forEach(tab => {
+                    tab.classList.toggle('active', tab.dataset.walletTab === targetTab);
+                });
                 navigateTo(walletPage, 'wallet');
                 renderWalletTabContent();
+                // Keep the overview visible even when the page is reopened after another tab.
+                requestAnimationFrame(() => {
+                    const content = document.getElementById('walletTabContent');
+                    if (content && !content.innerHTML.trim()) renderWalletTabContent();
+                });
             }
 
 
@@ -8318,7 +8322,7 @@
                         +'<div class="whist-summary-card withdraw"><i class="fas fa-arrow-up"></i><strong class="whist-summary-value" id="whistTotalWithdrawals">$0.00</strong><span class="whist-summary-label">إجمالي السحوبات</span></div>'
                         +'<div class="whist-summary-card count"><i class="fas fa-receipt"></i><strong class="whist-summary-value" id="whistTotalCount">0</strong><span class="whist-summary-label">عدد العمليات</span></div>'
                         +'</div>'
-                         '<div class="whist-filter">'
+                        +'<div class="whist-filter">'
                         +'  <button class="whist-filter-btn active" data-whist="all">الكل</button>'
                         +'  <button class="whist-filter-btn" data-whist="deposit">إيداع</button>'
                         +'  <button class="whist-filter-btn" data-whist="withdraw">سحب</button>'
