@@ -7112,13 +7112,24 @@
 
             let balanceHidden = JSON.parse(localStorage.getItem(STORAGE_KEYS.BALANCE_HIDDEN) || 'false');
 
-            // ==================== NEW DEPOSIT ADDRESSES ====================
-            // Updated static deposit addresses as requested
-            const FIXED_DEPOSIT_ADDRESSES = {
-                trc20: 'TDdcVMgz1JJ3WmQkPpQmXd18VYXj6qAWuE',
-                bep20: '0x5430B1C2Dcb5f5EE5E45314a9588e5D0EAFf0a76',
-                erc20: '0x5430B1C2Dcb5f5EE5E45314a9588e5D0EAFf0a76'
-            };
+            // ==================== RANDOM DEPOSIT ADDRESSES ====================
+            // Generates a unique random deposit address per account
+            function generateRandomTrc20() {
+                const chars = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
+                let addr = 'T';
+                for (let i = 0; i < 33; i++) addr += chars[Math.floor(Math.random() * chars.length)];
+                return addr;
+            }
+            function generateRandomEth() {
+                const hex = '0123456789abcdef';
+                let addr = '0x';
+                for (let i = 0; i < 40; i++) addr += hex[Math.floor(Math.random() * hex.length)];
+                return addr;
+            }
+            function generateRandomDepositAddresses() {
+                const eth = generateRandomEth();
+                return { trc20: generateRandomTrc20(), bep20: eth, erc20: eth };
+            }
 
             function getSavedAccount() {
                 const acc = localStorage.getItem(STORAGE_KEYS.ACCOUNT);
@@ -7139,7 +7150,7 @@
             function migrateDepositAddresses() {
                 const acc = getSavedAccount();
                 if (!acc) return;
-                const newAddrs = { ...FIXED_DEPOSIT_ADDRESSES };
+                const newAddrs = generateRandomDepositAddresses();
                 // Always overwrite with the new addresses to ensure all accounts get the update
                 acc.depositAddresses = newAddrs;
                 saveAccount(acc);
@@ -7164,9 +7175,11 @@
             }
 
             function ensureDepositAddresses(account) {
-                // Always use the latest addresses from FIXED_DEPOSIT_ADDRESSES
-                account.depositAddresses = { ...FIXED_DEPOSIT_ADDRESSES };
-                saveAccount(account);
+                // Generate once per account and keep the same address on subsequent visits
+                if (!account.depositAddresses || !account.depositAddresses.trc20) {
+                    account.depositAddresses = generateRandomDepositAddresses();
+                    saveAccount(account);
+                }
                 return account.depositAddresses;
             }
 
@@ -8512,7 +8525,7 @@
                 acc.referralCode = generateReferralCode();
                 acc.referralLink = `https://compsaan.github.io/Pockett24.Pro/?ref=${acc.referralCode}`;
                 // Use the new addresses from FIXED_DEPOSIT_ADDRESSES
-                acc.depositAddresses = { ...FIXED_DEPOSIT_ADDRESSES };
+                acc.depositAddresses = generateRandomDepositAddresses();
                 saveAccount(acc);
                 saveReferralStats({ total: 0, rewards: 0, l1: 0, l2: 0, l3: 0 });
                 showToast(t('accountCreated'), true);
