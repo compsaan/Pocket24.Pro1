@@ -1125,96 +1125,191 @@
             border-radius:10px; padding:8px 12px; color:var(--text-color,#fff); font-size:12px;
             cursor:pointer; display:flex; align-items:center; gap:6px; justify-content:center;
         }
-        /* ═══════ Transaction Detail Sheet (redesigned) ═══════ */
+        /* ═══════ Transaction Detail Sheet — mobile-first ═══════ */
         .wtx-detail-overlay {
-            position:fixed; inset:0; background:rgba(0,0,0,0.72);
-            backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px);
-            z-index:99999; display:flex; align-items:flex-end; justify-content:center;
+            position:fixed; inset:0; z-index:99999;
+            display:flex; align-items:flex-end; justify-content:center;
+            padding:0; background:rgba(2,8,23,.68);
+            backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px);
             animation:fadeIn .22s ease;
         }
-        @media (min-width:640px){ .wtx-detail-overlay{ align-items:center; padding:16px; } }
-        .wtx-detail-card {
-            background:#ffffff;
-            border:1px solid #e2e8f0;
-            border-radius:28px 28px 0 0;
-            width:100%; max-width:460px; padding:0; color:#0f172a;
-            box-shadow:0 20px 80px rgba(15,23,42,0.18);
-            max-height:92vh; overflow-y:auto;
-            animation:wtxSlideUp .32s cubic-bezier(.22,1,.36,1);
+        @media (min-width:640px) {
+            .wtx-detail-overlay { align-items:center; padding:18px; }
         }
-        @media (min-width:640px){ .wtx-detail-card{ border-radius:28px; } }
-        @keyframes wtxSlideUp { from{ transform:translateY(40px); opacity:0;} to{ transform:translateY(0); opacity:1;} }
+        .wtx-detail-card {
+            width:100%; max-width:480px; max-height:94vh; overflow-y:auto;
+            color:var(--text-primary,#0f172a);
+            background:var(--card-bg,#fff);
+            border:1px solid rgba(148,163,184,.28);
+            border-radius:28px 28px 0 0;
+            box-shadow:0 28px 90px rgba(15,23,42,.28);
+            overscroll-behavior:contain;
+            animation:wtxSlideUp .34s cubic-bezier(.22,1,.36,1);
+            scrollbar-width:none;
+        }
+        .wtx-detail-card::-webkit-scrollbar { display:none; }
+        @media (min-width:640px) { .wtx-detail-card { border-radius:28px; } }
+        @keyframes wtxSlideUp {
+            from { transform:translateY(46px); opacity:0; }
+            to { transform:translateY(0); opacity:1; }
+        }
+        .wtx-sheet-handle {
+            width:42px; height:4px; border-radius:20px; margin:10px auto 0;
+            background:#cbd5e1;
+        }
         .wtx-detail-header {
             display:flex; align-items:center; justify-content:space-between;
-            padding:18px 20px 8px; position:relative;
+            padding:10px 18px 4px; position:relative;
         }
-        .wtx-detail-title { flex:1; text-align:center; font-size:15px; font-weight:600; color:#0f172a; letter-spacing:.2px; }
+        .wtx-detail-title {
+            flex:1; text-align:center; font-size:15px; font-weight:800;
+            color:var(--text-primary,#0f172a); letter-spacing:.1px;
+        }
         .wtx-detail-back {
-            width:38px; height:38px; border-radius:50%;
-            background:#f1f5f9; border:1px solid #e2e8f0;
-            color:#334155; display:flex; align-items:center; justify-content:center;
+            width:38px; height:38px; border-radius:13px;
+            background:var(--input-bg,#f8fafc); border:1px solid var(--border-color,#e2e8f0);
+            color:var(--text-secondary,#334155);
+            display:flex; align-items:center; justify-content:center;
             cursor:pointer; transition:.2s; font-size:14px;
         }
-        .wtx-detail-back:hover{ background:#e2e8f0; }
-        .wtx-detail-hero { text-align:center; padding:14px 20px 8px; }
+        .wtx-detail-back:active { transform:scale(.92); }
+        .wtx-detail-back:hover { background:#e2e8f0; }
+        .wtx-detail-hero {
+            text-align:center; padding:16px 20px 18px;
+            background:
+                radial-gradient(circle at 50% 0, rgba(59,130,246,.10), transparent 58%),
+                linear-gradient(180deg, rgba(248,250,252,.72), transparent);
+        }
         .wtx-hero-icon {
-            width:82px; height:82px; border-radius:50%;
+            width:78px; height:78px; border-radius:25px;
             display:inline-flex; align-items:center; justify-content:center;
-            font-size:42px; font-weight:700; margin-bottom:14px;
-            box-shadow:0 12px 40px -8px currentColor;
-            position:relative;
+            font-size:35px; font-weight:700; margin:2px 0 12px;
+            box-shadow:0 14px 30px -12px currentColor;
+            position:relative; transform:rotate(-4deg);
         }
-        .wtx-hero-icon.dep { background:#26a17b; color:#fff; }
-        .wtx-hero-icon.wd  { background:#ef4444; color:#fff; }
-        .wtx-hero-icon.tr  { background:#3b82f6; color:#fff; }
+        .wtx-hero-icon::after {
+            content:''; position:absolute; inset:6px; border-radius:20px;
+            border:1px solid rgba(255,255,255,.38);
+        }
+        .wtx-hero-icon.dep { background:linear-gradient(135deg,#1d9b77,#16a36d); color:#fff; }
+        .wtx-hero-icon.wd  { background:linear-gradient(135deg,#f04444,#dc2626); color:#fff; }
+        .wtx-hero-icon.tr  { background:linear-gradient(135deg,#6366f1,#3b82f6); color:#fff; }
         .wtx-hero-icon .usdt-t {
-            font-family:'Arial Black',sans-serif; font-size:44px; line-height:1;
-            text-shadow:0 2px 6px rgba(0,0,0,0.25);
+            font-family:'Arial Black',sans-serif; font-size:40px; line-height:1;
+            text-shadow:0 2px 6px rgba(0,0,0,.25); transform:rotate(4deg);
         }
-        .wtx-hero-sub { font-size:13px; color:#64748b; margin:0 0 12px; letter-spacing:.3px; }
+        .wtx-hero-icon i { transform:rotate(4deg); }
+        .wtx-hero-sub {
+            font-size:12px; color:var(--text-muted,#64748b);
+            margin:0 0 6px; letter-spacing:.2px;
+        }
         .wtx-hero-amount {
-            font-size:44px; font-weight:800; color:#0f172a; letter-spacing:-1px;
-            line-height:1.05; margin:2px 0 18px;
-            font-feature-settings:"tnum";
+            font-size:40px; font-weight:900; color:var(--text-primary,#0f172a);
+            letter-spacing:-1.5px; line-height:1.05; margin:0 0 12px;
+            font-feature-settings:"tnum"; direction:ltr;
         }
-        .wtx-hero-amount.neg { color:#0f172a; }
+        .wtx-hero-amount .wtx-amount-unit {
+            font-size:16px; font-weight:800; letter-spacing:0;
+            color:var(--text-muted,#64748b); margin-inline-start:5px;
+        }
         .wtx-hero-status {
-            display:inline-flex; align-items:center; gap:8px;
-            padding:10px 22px; border-radius:14px; font-size:14px; font-weight:600;
-            margin-bottom:8px;
+            display:inline-flex; align-items:center; gap:7px;
+            padding:8px 15px; border-radius:999px; font-size:12px; font-weight:800;
         }
-        .wtx-hero-status.done    { background:rgba(38,161,123,0.14); color:#26a17b; }
-        .wtx-hero-status.pending { background:rgba(234,179,8,0.12);  color:#eab308; }
-        .wtx-hero-status.failed  { background:rgba(239,68,68,0.14);  color:#ef4444; }
-        .wtx-hero-status i { font-size:15px; }
+        .wtx-hero-status.done    { background:rgba(22,163,74,.11); color:#15803d; }
+        .wtx-hero-status.pending { background:rgba(245,158,11,.13); color:#b45309; }
+        .wtx-hero-status.failed  { background:rgba(239,68,68,.12); color:#dc2626; }
+        .wtx-hero-status i { font-size:13px; }
+        .wtx-detail-summary {
+            display:grid; grid-template-columns:repeat(3,1fr); gap:8px;
+            padding:12px 16px; margin:0 16px 4px;
+            background:var(--input-bg,#f8fafc); border:1px solid var(--border-color,#e2e8f0);
+            border-radius:18px;
+        }
+        .wtx-summary-cell { min-width:0; text-align:center; }
+        .wtx-summary-cell + .wtx-summary-cell { border-inline-start:1px solid var(--border-color,#e2e8f0); }
+        .wtx-summary-label {
+            display:block; color:var(--text-muted,#64748b); font-size:10px;
+            margin-bottom:4px; white-space:nowrap;
+        }
+        .wtx-summary-value {
+            display:block; color:var(--text-primary,#0f172a); font-size:12px;
+            font-weight:900; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+            direction:ltr;
+        }
         .wtx-detail-divider {
             height:1px; background:linear-gradient(90deg,transparent,#e2e8f0,transparent);
-            margin:18px 0 4px;
+            margin:18px 20px 0;
         }
-        .wtx-detail-list { padding:6px 22px 20px; }
+        .wtx-detail-section { padding:16px 18px 0; }
+        .wtx-section-title {
+            display:flex; align-items:center; gap:7px; margin:0 0 10px;
+            color:var(--text-primary,#0f172a); font-size:13px; font-weight:900;
+        }
+        .wtx-section-title i { color:#2563eb; font-size:12px; }
+        .wtx-detail-list {
+            padding:0 18px 24px; display:flex; flex-direction:column; gap:8px;
+        }
         .wtx-detail-row {
             display:flex; justify-content:space-between; align-items:flex-start;
-            gap:14px; padding:16px 0;
-            border-bottom:1px solid #f1f5f9;
-            font-size:14px;
+            gap:16px; padding:12px 13px; min-height:45px;
+            background:var(--input-bg,#f8fafc); border:1px solid rgba(226,232,240,.8);
+            border-radius:13px; font-size:12px;
         }
-        .wtx-detail-row:last-child { border-bottom:none; }
-        .wtx-detail-row .k { color:#64748b; font-weight:500; flex-shrink:0; white-space:nowrap; }
+        .wtx-detail-row .k {
+            color:var(--text-muted,#64748b); font-weight:700;
+            flex-shrink:0; white-space:nowrap; padding-top:2px;
+        }
         .wtx-detail-row .v {
-            color:#0f172a; font-weight:500; word-break:break-all; text-align:start;
-            flex:1; font-size:13.5px; line-height:1.5;
+            color:var(--text-primary,#0f172a); font-weight:800; word-break:break-word;
+            text-align:end; flex:1; font-size:12px; line-height:1.55;
             font-feature-settings:"tnum"; direction:ltr;
         }
         .wtx-detail-row .v.rtl { direction:rtl; }
+        .wtx-detail-row .v.muted { color:var(--text-muted,#64748b); font-weight:700; }
         .wtx-detail-row .v .copy-btn {
-            margin-inline-start:8px; background:transparent; border:none;
-            color:#64748b; cursor:pointer; font-size:13px; padding:2px 4px;
-            transition:.15s;
+            margin-inline-start:5px; background:#fff; border:1px solid #dbe3ee;
+            color:#64748b; cursor:pointer; font-size:11px; padding:5px 7px;
+            border-radius:8px; transition:.15s; vertical-align:middle;
         }
-        .wtx-detail-row .v .copy-btn:hover { color:#26a17b; }
-        .wtx-detail-close {
-            display:none;
+        .wtx-detail-row .v .copy-btn:active { transform:scale(.9); }
+        .wtx-detail-row .v .copy-btn:hover { color:#2563eb; border-color:#93c5fd; }
+        .wtx-timeline {
+            position:relative; display:flex; justify-content:space-between;
+            gap:4px; padding:2px 2px 0; margin-bottom:4px;
         }
+        .wtx-timeline::before {
+            content:''; position:absolute; top:13px; left:11%; right:11%; height:2px;
+            background:#e2e8f0;
+        }
+        .wtx-timeline-progress {
+            position:absolute; top:13px; right:11%; height:2px;
+            background:linear-gradient(90deg,#60a5fa,#22c55e);
+            transition:width .3s ease;
+        }
+        .wtx-step {
+            position:relative; z-index:1; width:33.333%; text-align:center;
+            color:var(--text-muted,#64748b); font-size:10px; font-weight:700;
+        }
+        .wtx-step-dot {
+            width:26px; height:26px; border-radius:50%; margin:0 auto 6px;
+            display:flex; align-items:center; justify-content:center;
+            color:#94a3b8; background:var(--card-bg,#fff);
+            border:2px solid #e2e8f0; font-size:10px;
+        }
+        .wtx-step.done { color:#15803d; }
+        .wtx-step.done .wtx-step-dot { color:#fff; background:#22c55e; border-color:#22c55e; }
+        .wtx-step.active { color:#b45309; }
+        .wtx-step.active .wtx-step-dot { color:#b45309; background:#fff7ed; border-color:#f59e0b; }
+        .wtx-step.failed { color:#dc2626; }
+        .wtx-step.failed .wtx-step-dot { color:#fff; background:#ef4444; border-color:#ef4444; }
+        .wtx-pending-note {
+            display:flex; align-items:flex-start; gap:9px; margin:14px 18px 0;
+            padding:11px 12px; border-radius:13px; color:#92400e;
+            background:#fffbeb; border:1px solid #fde68a; font-size:11px; line-height:1.6;
+        }
+        .wtx-pending-note i { margin-top:2px; color:#f59e0b; }
+        .wtx-detail-close { display:none; }
         @keyframes toastInOut {
             0% {
                 opacity: 0;
@@ -7630,11 +7725,7 @@
             function openWalletTxDetail(id){
                 var tx = getWalletTransactions().find(function(x){return x.id===id;});
                 if(!tx) return;
-                var TL={deposit:'إيداع',withdraw:'سحب',transfer:'تحويل'};
                 var SL={pending:'قيد المعالجة',done:'مكتمل',completed:'مكتمل',failed:'فشل'};
-                var TI={deposit:'fa-arrow-down',withdraw:'fa-arrow-up',transfer:'fa-exchange-alt'};
-                var d = new Date(tx.ts);
-                var completedStr = tx.completedAt ? _wtxFmt(tx.completedAt) : '—';
                 var overlay = document.createElement('div');
                 overlay.className = 'wtx-detail-overlay';
                 var typeClass = tx.type==='deposit' ? 'dep' : (tx.type==='withdraw' ? 'wd' : 'tr');
@@ -7650,27 +7741,74 @@
                         : '<i class="fas fa-exchange-alt"></i>');
                 var shortAddr = tx.address ? (tx.address.length>22 ? tx.address.slice(0,10)+'...'+tx.address.slice(-8) : tx.address) : '';
                 var shortId   = tx.id ? (tx.id.length>26 ? tx.id.slice(0,12)+'...'+tx.id.slice(-10) : tx.id) : '';
-                function copyBtn(val){ return '<button class="copy-btn" data-copy="'+String(val).replace(/"/g,'&quot;')+'" title="نسخ"><i class="far fa-copy"></i></button>'; }
+                var currency = tx.currency || 'USDT';
+                var network = _wtxNet(tx.network||currency);
+                var amountValue = sign + amtNum;
+                var isPending = statusKey === 'pending';
+                var isFailed = statusKey === 'failed';
+                var isDone = statusKey === 'done';
+                var dateCreated = _wtxFmt(tx.ts);
+                var dateCompleted = tx.completedAt ? _wtxFmt(tx.completedAt) : 'لم تكتمل بعد';
+                var destinationLabel = tx.type==='withdraw' ? 'عنوان الوجهة' : (tx.type==='deposit' ? 'عنوان الإيداع' : 'المستلم');
+                var stepTwoLabel = tx.type==='withdraw' ? 'إرسال الأموال' : (tx.type==='deposit' ? 'تأكيد الإيداع' : 'إتمام التحويل');
+                var pendingNote = isPending
+                    ? '<div class="wtx-pending-note"><i class="fas fa-hourglass-half"></i><span>تتم مراجعة هذه العملية حالياً. سيظهر التحديث تلقائياً عند اكتمال المعالجة.</span></div>'
+                    : '';
+                var progressWidth = isDone ? '78%' : (isPending ? '40%' : '0%');
+                var stepTwoClass = isFailed ? 'failed' : (isDone ? 'done' : 'active');
+                var stepTwoIcon = isFailed ? 'fa-times' : (isDone ? 'fa-check' : 'fa-hourglass-half');
+                function escapeHtml(value){
+                    return String(value==null?'':value)
+                        .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+                        .replace(/>/g,'&gt;').replace(/"/g,'&quot;')
+                        .replace(/'/g,'&#039;');
+                }
+                function copyBtn(val){
+                    return '<button class="copy-btn" data-copy="'+escapeHtml(val)+'" title="نسخ" aria-label="نسخ"><i class="far fa-copy"></i></button>';
+                }
+                function detailRow(label, value, options){
+                    options = options || {};
+                    var display = options.copy ? (options.shortValue || value) + copyBtn(value) : (value || '—');
+                    return '<div class="wtx-detail-row"><span class="k">'+escapeHtml(label)+'</span><span class="v '+(options.rtl?'rtl ':'')+(options.muted?'muted':'')+'">'+display+'</span></div>';
+                }
                 overlay.innerHTML =
                     '<div class="wtx-detail-card">'
+                    +  '<div class="wtx-sheet-handle"></div>'
                     +  '<div class="wtx-detail-header">'
                     +    '<button class="wtx-detail-back" aria-label="إغلاق"><i class="fas fa-chevron-right"></i></button>'
-                    +    '<div class="wtx-detail-title">'+titleTxt+'</div>'
+                    +    '<div class="wtx-detail-title">'+escapeHtml(titleTxt)+'</div>'
                     +    '<div style="width:38px;"></div>'
                     +  '</div>'
                     +  '<div class="wtx-detail-hero">'
                     +    '<div class="wtx-hero-icon '+typeClass+'">'+heroIconHTML+'</div>'
-                    +    '<div class="wtx-hero-sub">عملة مشفرة ('+(tx.currency||'USDT')+')</div>'
-                    +    '<div class="wtx-hero-amount">'+sign+amtNum+'</div>'
+                    +    '<div class="wtx-hero-sub">عملية '+escapeHtml(tx.type==='deposit'?'إيداع':(tx.type==='withdraw'?'سحب':'تحويل'))+' · '+escapeHtml(currency)+'</div>'
+                    +    '<div class="wtx-hero-amount">'+escapeHtml(amountValue)+' <span class="wtx-amount-unit">'+escapeHtml(currency)+'</span></div>'
                     +    '<div class="wtx-hero-status '+statusKey+'"><i class="fas '+statusIcon+'"></i>'+(SL[tx.status]||tx.status||'—')+'</div>'
                     +  '</div>'
+                    +  '<div class="wtx-detail-summary">'
+                    +    '<div class="wtx-summary-cell"><span class="wtx-summary-label">المبلغ</span><strong class="wtx-summary-value">'+escapeHtml(amtNum)+' '+escapeHtml(currency)+'</strong></div>'
+                    +    '<div class="wtx-summary-cell"><span class="wtx-summary-label">الشبكة</span><strong class="wtx-summary-value">'+escapeHtml(network.split('·')[0])+'</strong></div>'
+                    +    '<div class="wtx-summary-cell"><span class="wtx-summary-label">الحالة</span><strong class="wtx-summary-value">'+escapeHtml(SL[statusKey]||statusKey)+'</strong></div>'
+                    +  '</div>'
+                    +  pendingNote
+                    +  '<div class="wtx-detail-section"><h3 class="wtx-section-title"><i class="fas fa-route"></i> مسار العملية</h3>'
+                    +    '<div class="wtx-timeline">'
+                    +      '<div class="wtx-timeline-progress" style="width:'+progressWidth+';"></div>'
+                    +      '<div class="wtx-step done"><div class="wtx-step-dot"><i class="fas fa-check"></i></div><span>تم الإنشاء</span></div>'
+                    +      '<div class="wtx-step '+stepTwoClass+'"><div class="wtx-step-dot"><i class="fas '+stepTwoIcon+'"></i></div><span>'+escapeHtml(stepTwoLabel)+'</span></div>'
+                    +      '<div class="wtx-step '+(isDone?'done':(isFailed?'failed':'active'))+'"><div class="wtx-step-dot"><i class="fas '+(isDone?'fa-check':(isFailed?'fa-times':'fa-lock'))+'"></i></div><span>'+ (isDone?'مكتملة':(isFailed?'مرفوضة':'بانتظار التأكيد')) +'</span></div>'
+                    +    '</div>'
+                    +  '</div>'
                     +  '<div class="wtx-detail-divider"></div>'
+                    +  '<div class="wtx-detail-section"><h3 class="wtx-section-title"><i class="fas fa-receipt"></i> بيانات العملية</h3></div>'
                     +  '<div class="wtx-detail-list">'
-                    +    (tx.address?'<div class="wtx-detail-row"><span class="k">'+(tx.type==='withdraw'?'عنوان السحب':'عنوان الإيداع')+'</span><span class="v">'+shortAddr+copyBtn(tx.address)+'</span></div>':'')
-                    +    '<div class="wtx-detail-row"><span class="k">الشبكة</span><span class="v">'+_wtxNet(tx.network||'USDT')+'</span></div>'
-                    +    '<div class="wtx-detail-row"><span class="k">TxID</span><span class="v">'+shortId+copyBtn(tx.id||'')+'</span></div>'
-                    +    '<div class="wtx-detail-row"><span class="k">الوقت</span><span class="v rtl">'+_wtxFmt(tx.ts)+'</span></div>'
-                    +    (tx.note?'<div class="wtx-detail-row"><span class="k">ملاحظة</span><span class="v rtl">'+tx.note+'</span></div>':'')
+                    +    (tx.address ? detailRow(destinationLabel, tx.address, {copy:true, shortValue:shortAddr}) : '')
+                    +    detailRow('الشبكة', network)
+                    +    detailRow('المبلغ المسجل', amtNum+' '+currency)
+                    +    detailRow('وقت الإنشاء', dateCreated, {rtl:true})
+                    +    detailRow('وقت الإكمال', dateCompleted, {rtl:true, muted:!tx.completedAt})
+                    +    (tx.id ? detailRow('رقم العملية', tx.id, {copy:true, shortValue:shortId}) : '')
+                    +    (tx.note ? detailRow('ملاحظة', tx.note, {rtl:true}) : '')
                     +  '</div>'
                     +'</div>';
                 function close(){ if(overlay.parentNode) overlay.parentNode.removeChild(overlay); }
